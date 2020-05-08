@@ -42,6 +42,32 @@ module.exports = {
 		} catch(e) {
 			console.log(e);
 		}
+	},
+
+	addSub: async (req, res) => {
+		try {
+			let _id = req.body._id;
+			let client = await mongo.connect()
+			let data = await postsDAO.addSub(client, _id)
+			res.status(201).json(data);
+			 
+		} catch (e) {
+			console.log(e)
+			res.status(500).json({msg: "Server Error"})
+		}
+	},
+
+	removeSub: async (req, res) => {
+		try {
+			let { _id, ind } = req.body;
+			let client = await mongo.connect()
+			let data = await postsDAO.removeSub(client, _id, ind)
+
+			res.status(202).json(data)
+		} catch (e) {
+			console.log(e)
+			res.status(500).json({msg: "Server Error"})
+		}
 	}
 }
 

@@ -22,5 +22,28 @@ module.exports = {
                 err ? reject(err) : resolve(data);
             })
         })
+    ),
+    addSub: (client, _id) => (
+        new Promise((resolve, reject) => {
+            !_id ? reject("No ID in request") : null;
+            client.db("posts").collection("posts")
+            .updateOne({_id: new mongodb.ObjectID(_id)}, {$push :{items: {body: "Empty Item", ticked: false}}}, (err, data) => {
+                err ? reject(err) : resolve(data);
+            })
+        })
+    ),
+    removeSub: (client, _id, ind) => (
+        new Promise((resolve, reject) => {
+            !_id || !ind ? reject("Incorrect Params") : null;
+
+            const ID = new mongodb.ObjectID(_id);
+            client.db("posts").collection("posts").findOne({_id: ID}, (err, data) => {
+                let newArray = data.items.filter((sub, index) => index !== ind);
+                console.log(newArray)
+                err ? reject(err) : client.db("posts").collection("posts").updateOne({_id: ID}, {$set: {items: newArray}}, (err, data) => {
+                    err ? reject(err) : resolve(data);
+                })
+            })
+        })
     )
 }

@@ -13,6 +13,8 @@ router.get('/adam/', (req,res,next) => {
 router.route('/posts').get(postsCtrl.fetchAll)
 router.route('/posts').put(postsCtrl.addPost)
 router.route('/posts').delete(postsCtrl.removePost)
+router.route('/posts/sub').put(postsCtrl.addSub)
+router.route('/posts/sub').delete(postsCtrl.removeSub)
 
 
 

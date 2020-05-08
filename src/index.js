@@ -4,6 +4,12 @@ const postsDAO = require('./dao/postsDAO');
 
 const port = process.env.PORT || 5000;
 
+app.listen(port, () => {
+    console.log(`Listening on port ${port}`)
+})
+
+/* ----- This is a different approach to initializing the 
+-------- Mongo Client which I will implement in the future.
 MongoClient.connect(
     process.env.DB_URI,
     { useNewUrlParser: true},
@@ -13,9 +19,7 @@ MongoClient.connect(
     process.exit(1)
 })
 .then(async client => {
-    posts = await postsDAO.fetchAll(client)
-    console.log(posts)
     app.listen(port, () => {
         console.log(`Listening on port ${port}`)
     }) 
-})
+}) */
