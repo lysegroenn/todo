@@ -8,6 +8,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cors());
 
+
+//Api routes
 app.use('/api/', posts);
 
-app.listen(5000, () => console.log(`Listening on port: 5000..`));
+module.exports = app;
