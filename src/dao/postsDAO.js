@@ -8,6 +8,9 @@ module.exports = {
             })
         })
     ),
+    /**
+    @param {string} title - Title for the new post
+    */
     addPost: (client, title) => (
         new Promise((resolve, reject) => {
             client.db("posts").collection("posts").insertOne({title, items: [{body: "Empty item", ticked: false}]}, (err, data) => {
