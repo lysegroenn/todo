@@ -1,4 +1,4 @@
-const mongo = require('../dao/dbMongo');
+//const mongo = require('../dao/dbMongo');
 const postsDAO = require('../dao/postsDAO');
 
 module.exports = {
