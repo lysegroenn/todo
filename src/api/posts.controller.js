@@ -16,7 +16,7 @@ module.exports = {
 			console.log('Got PUT request.')
 			let title = "New Post"
 			mongo.connect()
-			.then(client => postsDAO.addPost(client, title))
+			.then(client => postsDAO.addPost(title))
 			.then(data => res.status(201).json({msg: "Post created."}))
 			.catch(err => {
 				console.log(err);
@@ -33,7 +33,7 @@ module.exports = {
 			_id = req.body._id;
 			console.log(`Got Remove Post request with id ${_id}.`)
 			mongo.connect()
-			.then(client => postsDAO.removePost(client, _id))
+			.then(client => postsDAO.removePost(_id))
 			.then(data => res.status(202).json(data))
 			.catch(err => {
 				console.log(err)
@@ -48,7 +48,7 @@ module.exports = {
 		try {
 			let _id = req.body._id;
 			let client = await mongo.connect()
-			let data = await postsDAO.addSub(client, _id)
+			let data = await postsDAO.addSub(_id)
 			res.status(201).json(data);
 			 
 		} catch (e) {
@@ -61,7 +61,7 @@ module.exports = {
 		try {
 			let { _id, ind } = req.body;
 			let client = await mongo.connect()
-			let data = await postsDAO.removeSub(client, _id, ind)
+			let data = await postsDAO.removeSub(_id, ind)
 
 			res.status(202).json(data)
 		} catch (e) {

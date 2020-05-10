@@ -1,9 +1,22 @@
 mongodb = require('mongodb');
 
+let posts
+
 module.exports = {
+    injectDB: async (client) => {
+        if (posts) {
+            return
+        }
+        try {
+            console.log('injecting db')
+            posts = await client.db("posts").collection("posts");
+        } catch(e) {
+            console.log(`Error connecting to database: ${e}`)
+        }
+    },
     fetchAll: (client) => (
         new Promise((resolve, reject) => {
-            client.db("posts").collection("posts").find().toArray((err, data) => {
+            posts.find().toArray((err, data) => {
                 err ? reject(err) : resolve(data);
             })
         })
@@ -11,39 +24,39 @@ module.exports = {
     /**
     @param {string} title - Title for the new post
     */
-    addPost: (client, title) => (
+    addPost: (title) => (
         new Promise((resolve, reject) => {
-            client.db("posts").collection("posts").insertOne({title, items: [{body: "Empty item", ticked: false}]}, (err, data) => {
+            posts.insertOne({title, items: [{body: "Empty item", ticked: false}]}, (err, data) => {
                 err ? reject(err) : resolve(`Successfully inserted post with id ${data.insertedId}.`)
             })
         })
     ),
-    removePost: (client, _id) => (
+    removePost: (_id) => (
         new Promise((resolve, reject) => {
             const objId = new mongodb.ObjectID(_id);
-            client.db("posts").collection("posts").removeOne({_id: objId}, (err, data) => {
+            posts.removeOne({_id: objId}, (err, data) => {
                 err ? reject(err) : resolve(data);
             })
         })
     ),
-    addSub: (client, _id) => (
+    addSub: (_id) => (
         new Promise((resolve, reject) => {
             !_id ? reject("No ID in request") : null;
-            client.db("posts").collection("posts")
+            posts
             .updateOne({_id: new mongodb.ObjectID(_id)}, {$push :{items: {body: "Empty Item", ticked: false}}}, (err, data) => {
                 err ? reject(err) : resolve(data);
             })
         })
     ),
-    removeSub: (client, _id, ind) => (
+    removeSub: (_id, ind) => (
         new Promise((resolve, reject) => {
             !_id || !ind ? reject("Incorrect Params") : null;
 
             const ID = new mongodb.ObjectID(_id);
-            client.db("posts").collection("posts").findOne({_id: ID}, (err, data) => {
+            posts.findOne({_id: ID}, (err, data) => {
                 let newArray = data.items.filter((sub, index) => index !== ind);
                 console.log(newArray)
-                err ? reject(err) : client.db("posts").collection("posts").updateOne({_id: ID}, {$set: {items: newArray}}, (err, data) => {
+                err ? reject(err) : posts.updateOne({_id: ID}, {$set: {items: newArray}}, (err, data) => {
                     err ? reject(err) : resolve(data);
                 })
             })
