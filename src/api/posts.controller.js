@@ -2,52 +2,45 @@
 const postsDAO = require('../dao/postsDAO');
 
 module.exports = {
-    fetchAll: (req, res) => {
-		console.log("Got GET request.")
-        mongo.connect()
-        .then(client => postsDAO.fetchAll(client))
-        .then(data => res.status(200).json(data))
-        //.then(json => res.status(200).json(json))
-        .catch(err => res.status(500).json({msg: "Server Error."}))
+    fetchAll: async (req, res) => {
+		try {
+			console.log('Got GET request')
+			const posts = await postsDAO.fetchAll()
+			res.status(200).json(posts)
+		} catch (e) {
+			res.status(500).json({msg: "Server Error."})
+		}
 	},
 	
-	addPost: (req, res) => {
+	addPost: async (req, res) => {
 		try {
 			console.log('Got PUT request.')
-			let title = "New Post"
-			mongo.connect()
-			.then(client => postsDAO.addPost(title))
-			.then(data => res.status(201).json({msg: "Post created."}))
-			.catch(err => {
-				console.log(err);
-				res.status(500).json({msg: "Server Error."})
-			})
+			const title = "New Post"
+			let response = await postsDAO.addPost(title)
+			res.status(201).json({msg: "Post created."})
 		} catch(e) {
+			res.status(500).json({msg: "Server Error."})
 			console.log(e)
 		}
 
 	},
 
-	removePost: (req, res) => {
+	removePost: async (req, res) => {
 		try {
-			_id = req.body._id;
+			const _id = req.body._id;
 			console.log(`Got Remove Post request with id ${_id}.`)
-			mongo.connect()
-			.then(client => postsDAO.removePost(_id))
-			.then(data => res.status(202).json(data))
-			.catch(err => {
-				console.log(err)
-				res.status(500).json({msg: "Server Error"})
-			})
-		} catch(e) {
+
+			let response = await postsDAO.removePost(_id)
+			res.status(202).json({msg: `Successfully removed post.`})
+			} catch(e) {
 			console.log(e);
+			res.status(500).json({msg: "Server Error"})
 		}
 	},
 
 	addSub: async (req, res) => {
 		try {
 			let _id = req.body._id;
-			let client = await mongo.connect()
 			let data = await postsDAO.addSub(_id)
 			res.status(201).json(data);
 			 
@@ -60,7 +53,6 @@ module.exports = {
 	removeSub: async (req, res) => {
 		try {
 			let { _id, ind } = req.body;
-			let client = await mongo.connect()
 			let data = await postsDAO.removeSub(_id, ind)
 
 			res.status(202).json(data)
