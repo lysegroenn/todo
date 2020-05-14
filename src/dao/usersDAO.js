@@ -31,4 +31,27 @@ module.exports = class UsersDao {
             return { error: e }
         }
     }
+
+    static async loginUser(email, jwt) {
+        try {
+            await sessions.updateOne(
+                { user_id: email },
+                { $set: { jwt: jwt } },
+                {upsert: true}
+            )
+            return { success: true }
+        } catch (e) {
+            console.error(`Error occured while logging in user: ${e}`)
+            return { error: e }
+        }
+    }
+    static async logoutUser(email) {
+        try {
+            await sessions.deleteOne({ user_id: email })
+            return { succes: true }
+        } catch (e) {
+            console.error(`Error occured while logging out user ${e}`)
+            return { error: e }
+        }
+    }
 }

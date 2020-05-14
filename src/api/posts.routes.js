@@ -10,11 +10,11 @@ router.get('/adam/', (req,res,next) => {
     res.status(200).json({msg: 'Success'})
 }) */
 
-router.route('/posts').get(postsCtrl.fetchAll)
-router.route('/posts').put(postsCtrl.addPost)
-router.route('/posts').delete(postsCtrl.removePost)
-router.route('/posts/sub').put(postsCtrl.addSub)
-router.route('/posts/sub').delete(postsCtrl.removeSub)
+router.route('/').get(postsCtrl.fetchAll)
+router.route('/').put(postsCtrl.addPost)
+router.route('/').delete(postsCtrl.removePost)
+router.route('/sub').put(postsCtrl.addSub)
+router.route('/sub').delete(postsCtrl.removeSub)
 
 
 

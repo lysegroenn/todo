@@ -1,6 +1,7 @@
 const app = require('./server');
 const MongoClient = require('mongodb').MongoClient;
 const postsDAO = require('./dao/postsDAO');
+const usersDAO = require('./dao/usersDAO')
 
 const port = process.env.PORT || 5000;
 /*
@@ -21,6 +22,7 @@ MongoClient.connect(
 })
 .then(async client => {
     await postsDAO.injectDB(client)
+    await usersDAO.injectDB(client)
     app.listen(port, () => {
         console.log(`Listening on port ${port}`)
     }) 

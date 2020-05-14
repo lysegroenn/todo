@@ -85,5 +85,62 @@ module.exports = class UserController {
             res.status(500).json({ error: e + 'Hej'})
         }
     }
+    static async login(req, res, next) {
+        try {
+            const { email, password } = req.body
+            if (!email || typeof email !== "string") {
+              res.status(400).json({ error: "Bad email format, expected string." })
+              return
+            }
+            if (!password || typeof password !== "string") {
+              res.status(400).json({ error: "Bad password format, expected string." })
+              return
+            }
+            let userData = await UsersDAO.getUser(email)
+            if (!userData) {
+              res.status(401).json({ error: "Make sure your email is correct." })
+              return
+            }
+            const user = new User(userData)
+      
+            if (!(await user.comparePassword(password))) {
+              res.status(401).json({ error: "Make sure your password is correct." })
+              return
+            }
+      
+            const loginResponse = await UsersDAO.loginUser(user.email, user.encoded())
+            if (!loginResponse.success) {
+              res.status(500).json({ error: loginResponse.error })
+              return
+            }
+            res.json({ auth_token: user.encoded(), info: user.toJson() })
+
+          } catch (e) {
+            res.status(400).json({ error: e })
+            return
+          }
+    }
+    static async logout(req, res) {
+        try {
+          const userJwt = req.get("Authorization").slice("Bearer ".length)
+          console.log(`JWT: ${userJwt}`)
+          const userObj = await User.decoded(userJwt)
+          //console.log(`User: ${userObj.info}`)
+          var { error } = userObj
+          if (error) {
+            res.status(401).json({ error })
+            return
+          }
+          const logoutResult = await UsersDAO.logoutUser(userObj.email)
+          var { error } = logoutResult
+          if (error) {
+            res.status(500).json({ error })
+            return
+          }
+          res.json(logoutResult)
+        } catch (e) {
+          res.status(500).json(e)
+        }
+      }
 }
 
