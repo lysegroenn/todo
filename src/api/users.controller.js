@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 const UsersDAO = require('../dao/usersDAO');
 
 const hashPassword = async password => await bcrypt.hash(password, 10);
-const SecretKey = 'lskdjfoijoi234lk234mndfg908d';
+//const SecretKey = 'lskdjfoijoi234lk234mndfg908d';
+const SecretKey = process.env.SECRET_KEY;
 
 
 
@@ -39,7 +40,8 @@ class User {
         }
     }
 
-module.exports = class UserController {
+module.exports = 
+    class UserController {
     static async register(req, res) {
         try {
             const userFromBody = req.body
@@ -143,4 +145,4 @@ module.exports = class UserController {
         }
       }
 }
-
+module.exports.User = User;

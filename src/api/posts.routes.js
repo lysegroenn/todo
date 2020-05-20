@@ -15,6 +15,8 @@ router.route('/').put(postsCtrl.addPost)
 router.route('/').delete(postsCtrl.removePost)
 router.route('/sub').put(postsCtrl.addSub)
 router.route('/sub').delete(postsCtrl.removeSub)
+router.route('/userPosts').get(postsCtrl.getUserPosts)
+router.route('/userPosts').post(postsCtrl.addUserPost)
 
 
 

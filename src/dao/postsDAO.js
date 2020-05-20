@@ -1,15 +1,17 @@
 mongodb = require('mongodb');
 
 let posts
+let userPosts
 
 module.exports = {
     injectDB: async (client) => {
-        if (posts) {
+        if (posts && userPosts) {
             return
         }
         try {
             console.log('injecting db')
             posts = await client.db("posts").collection("posts");
+            userPosts = await client.db("posts").collection("userPosts");
         } catch(e) {
             console.log(`Error connecting to database: ${e}`)
         }
@@ -59,6 +61,22 @@ module.exports = {
                 err ? reject(err) : posts.updateOne({_id: ID}, {$set: {items: newArray}}, (err, data) => {
                     err ? reject(err) : resolve(data);
                 })
+            })
+        })
+    ),
+    getUserPosts: (user) => (
+        new Promise((resolve, reject) => {
+            const user_id = user.email //change to destructuring: const { email } = user
+            userPosts.find({user_id: user_id}, (err, data) => {
+                err ? reject(err) : resolve(data.toArray())
+            })        
+        })
+    ),
+    addUserPost: (user, title) => (
+        new Promise((resolve, reject) => {
+            const user_id = user.email //change to destructuring const { email } = user
+            userPosts.insertOne({user_id: user_id, title: title, items: [{body: "Empty item", ticked: false}]}, (err, data) => {
+                err ? reject(err) : resolve(data)
             })
         })
     )

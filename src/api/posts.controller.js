@@ -1,5 +1,8 @@
-//const mongo = require('../dao/dbMongo');
 const postsDAO = require('../dao/postsDAO');
+const User = require('./users.controller').User;
+
+const SecretKey = process.env.SECRET_KEY;
+
 
 module.exports = {
     fetchAll: async (req, res) => {
@@ -59,6 +62,47 @@ module.exports = {
 		} catch (e) {
 			console.log(e)
 			res.status(500).json({msg: "Server Error"})
+		}
+	},
+
+	getUserPosts: async (req, res) => {
+		try {
+			console.log(`Got getUserPosts request`)
+			const userJwt = req.get("Authorization").slice("Bearer ".length)
+			const user = await User.decoded(userJwt)
+			var { error } = user
+			if (error) {
+				res.status(401).json({ error })
+				return
+			} 
+
+			const userPostsResponse = await postsDAO.getUserPosts(user)
+			//console.log(userPostsResponse)
+			res.json({ status: "success", posts: userPostsResponse})
+
+		} catch (e) {
+			res.status(500).json({ e: e + " hej" })
+		}
+	},
+
+	addUserPost: async (req, res) => {
+		try {
+			let { title } = req.body
+			const userJwt = req.get("Authorization").slice("Bearer ".length)
+			const user = await User.decoded(userJwt)
+		
+			var { error } = user
+			if (error) {
+				res.status(401).json({ error })
+				return
+			}
+
+			const addResult = await postsDAO.addUserPost(user, title)
+			res.status(201).json({status: "success"})
+
+		} catch (e) {
+			res.status(500).json({ e })
+			console.error(e)
 		}
 	}
 }
