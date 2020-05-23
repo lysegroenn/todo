@@ -52,6 +52,9 @@ module.exports =
             if (userFromBody && userFromBody.name.length < 3) {
                 errors.name = "You must specify a name of at least 3 characters."
             }
+            if (await UsersDAO.checkEmail(userFromBody.email) > 0) {
+                errors.email = "An account with that email already exists."
+            }
 
             if (Object.keys(errors).length > 0) {
                 res.status(400).json(errors)

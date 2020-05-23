@@ -32,6 +32,20 @@ module.exports = class UsersDao {
         }
     }
 
+    static async checkEmail(email) {
+        try {
+            const emailResult = await users.find({email: email}).toArray()
+            if (emailResult.length > 0) {
+                return 1
+            }
+            else {
+                return 0
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     static async loginUser(email, jwt) {
         try {
             await sessions.updateOne(
