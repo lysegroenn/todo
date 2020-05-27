@@ -25,7 +25,7 @@ module.exports = class UsersDao {
             return { success: true }
         } catch (e) {
             if (String(e).startsWith("MongoError: E11000 duplicate key error")) {
-                return { error: "A user with the given email already ecists." }
+                return { error: "A user with the given email already exists." }
             }
             console.error(`Error occured while adding new user, ${e}`)
             return { error: e }
@@ -66,6 +66,17 @@ module.exports = class UsersDao {
         } catch (e) {
             console.error(`Error occured while logging out user ${e}`)
             return { error: e }
+        }
+    }
+    static async checkLoginStatus(userJwt) {
+        try {
+            const isLoggedIn = await sessions.findOne({jwt: userJwt})
+            if (isLoggedIn === null) {
+                return false
+            }
+            return true
+        } catch (e) {
+            console.log(e)
         }
     }
 }

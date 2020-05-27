@@ -1,4 +1,5 @@
 const postsDAO = require('../dao/postsDAO');
+const UsersDAO = require('../dao/usersDAO');
 const User = require('./users.controller').User;
 
 const SecretKey = process.env.SECRET_KEY;
@@ -15,7 +16,11 @@ module.exports = {
 				res.status(401).json({ error })
 				return
 			} 
-
+			const checkLoginStatusResponse = await UsersDAO.checkLoginStatus(userJwt)
+			if (checkLoginStatusResponse === false) {
+				res.status(401).json({success: false, msg: 'User is not logged in.'})
+				return
+			}
 			const userPostsResponse = await postsDAO.getUserPosts(user)
 			//console.log(userPostsResponse)
 			res.json({ success: true, posts: userPostsResponse})
