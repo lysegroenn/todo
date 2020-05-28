@@ -66,8 +66,7 @@ const loginUser = (email, password) => {
             setUser(json)
             console.log(loadUser())
             dispatch(getUserPosts(json.auth_token))
-        })
-        
+        })        
     }
 }
 
@@ -145,14 +144,29 @@ const removeUserSub = (jwt, _id, ind) => {
 
 
 // Local storage ------------------------
-
-
+const verifyLocalStorage = () => {
+    return(dispatch) => {
+        let localUser = loadUser()
+        console.log(localUser)
+        fetch(Host + ':5000/api/users/status/', {method: 'GET', headers: { 'Authorization': `Bearer ${localUser.auth_token}`, 'Content-Type': 'application/json' }})
+        .then(res => res.json())
+        .then(json =>{
+            console.log(json)
+            if(json.isLoggedIn) {
+                console.log('is logged in')
+                dispatch(storeUser(localUser))
+                dispatch(getUserPosts(localUser.auth_token))
+            }
+            return
+        })
+    }
+}
 
 
 /* Reducer: Is passed the initial state as well as an action,
  which is an object containing a 'type' and a 'payload'. 
 The action object is created by the action 'creators'. */
-const reducer = (state = {updating: false, posts: [], user: loadUser()}, action) => {
+const reducer = (state = {updating: false, posts: [], user: {info: {name: ''}, auth_token: ''}}, action) => {
     switch(action.type) {
         case 'RECEIVE_POSTS' :
             return {...state, posts: action.posts};
@@ -201,6 +215,9 @@ const mapDispatch = (dispatch) => {
         },
         removeUserSub: (jwt, _id, ind) => {
             dispatch(removeUserSub(jwt, _id, ind))
+        },
+        verifyLocalStorage: () => {
+            dispatch(verifyLocalStorage())
         }
     }
 }

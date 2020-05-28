@@ -71,6 +71,7 @@ module.exports = class UsersDao {
     static async checkLoginStatus(userJwt) {
         try {
             const isLoggedIn = await sessions.findOne({jwt: userJwt})
+            console.log(isLoggedIn)
             if (isLoggedIn === null) {
                 return false
             }

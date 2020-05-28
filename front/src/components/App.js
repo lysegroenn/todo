@@ -7,7 +7,7 @@ import './css/App.css'
 class App extends React.Component {
     constructor(props) {
         super(props);
-            this.props.getUserPosts(this.props.user.auth_token)
+        this.props.verifyLocalStorage()
         };
 
     render () {

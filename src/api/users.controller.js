@@ -147,5 +147,19 @@ module.exports =
           res.status(500).json(e)
         }
       }
+      static async getLoginStatus(req, res) {
+          try {
+              const userJwt = req.get("Authorization").slice("Bearer ".length)
+              console.log(`Token: ${userJwt}`)
+              const isLoggedIn = await UsersDAO.checkLoginStatus(userJwt)
+              if (isLoggedIn) {
+                  res.json({isLoggedIn: true})
+                  return
+              }
+              res.json({isLoggedIn: false})
+          } catch (error) {
+              res.status(500).json({msg: 'Server error.'})
+          }
+      }
 }
 module.exports.User = User;
