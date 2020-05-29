@@ -148,6 +148,9 @@ const verifyLocalStorage = () => {
     return(dispatch) => {
         let localUser = loadUser()
         console.log(localUser)
+        if (!localUser) {
+            return
+        }
         fetch(Host + ':5000/api/users/status/', {method: 'GET', headers: { 'Authorization': `Bearer ${localUser.auth_token}`, 'Content-Type': 'application/json' }})
         .then(res => res.json())
         .then(json =>{
