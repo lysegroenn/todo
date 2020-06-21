@@ -41,12 +41,24 @@ const storeUser = (user) => {
     }
 }
 
+// Action to display spinner
+const isFetching = (bool) => {
+    return {
+        type: 'IS_FETCHING',
+        bool: bool
+    }
+}
+
 
 const fetchPosts = () => {
     return (dispatch, getState) => {
+        dispatch(isFetching(true))
         fetch(Host + ':5000/api/posts/')
         .then(res => res.json())
-        .then(json => dispatch(receivePosts(json)))
+        .then(json => {
+            dispatch(receivePosts(json))
+            dispatch(isFetching(false))
+        })
     }
 } 
 
@@ -169,7 +181,7 @@ const verifyLocalStorage = () => {
 /* Reducer: Is passed the initial state as well as an action,
  which is an object containing a 'type' and a 'payload'. 
 The action object is created by the action 'creators'. */
-const reducer = (state = {updating: false, posts: [], user: {info: {name: ''}, auth_token: ''}}, action) => {
+const reducer = (state = {updating: false, posts: [], user: {info: {name: ''}, auth_token: ''}, fetchingPosts: false}, action) => {
     switch(action.type) {
         case 'RECEIVE_POSTS' :
             return {...state, posts: action.posts};
@@ -179,6 +191,8 @@ const reducer = (state = {updating: false, posts: [], user: {info: {name: ''}, a
             return {...state, updating: action.bool}
         case 'STORE_USER' :
             return {...state, user: action.user}
+        case 'IS_FETCHING' :
+            return {...state, fetchingPosts: action.bool}
         default:
             return state; 
     };
@@ -189,7 +203,8 @@ const mapState = (state) => {
     return {
         posts: state.posts,
         updating: state.updating,
-        user: state.user
+        user: state.user,
+        fetchingPosts: state.fetchingPosts
     };
 };
 
